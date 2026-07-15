@@ -27,33 +27,33 @@ public class LogUtil {
         if (!logFile.getParentFile().exists()) {
             boolean mkdirFlag = logFile.getParentFile().mkdirs();
             if (!mkdirFlag) {
-                throw new FileNotFoundException("创建文件目录失败:" + logFile.getParentFile());
+                throw new FileNotFoundException("Failed to create file directory: " + logFile.getParentFile());
             }
         }
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(logFile));
             for (Object object : result) {
                 if (!(object instanceof BaseResult)) {
-                    logger.error("不支持类:{}", object.getClass());
-                    throw new Exception("不支持该类型");
+                    logger.error("Unsupported class: {}", object.getClass());
+                    throw new Exception("Unsupported type");
                 } else if (object instanceof XmlParseResult) {
                     XmlParseResult xmlParseResult = (XmlParseResult) object;
                     XmlNodeParserResult xmlNodeParserResult = xmlParseResult.getXmlNodeParserResult();
                     String statusCode2 = xmlNodeParserResult.getStatusCode();
                     String errorDetail = xmlNodeParserResult.getErrorMsg();
                     if (statusCode2.equals(ErrorCodeEnum.SUCCESS.getCode())) {
-                        statusCode = "成功";
+                        statusCode = "Success";
                     } else {
-                        statusCode = "失败";
+                        statusCode = "Failed";
                     }
                     bw.append("MapperFileName=" + xmlParseResult.getMapperName() + ",line=" + xmlParseResult.getLineNumber() + "\n");
                     bw.append("[").append(statusCode).append("]");
-                    bw.append("SQL ID:").append(xmlNodeParserResult.getSqlNodeId()).append(", SQL语句: ").append(xmlNodeParserResult.getFormatSql());
+                    bw.append("SQL ID:").append(xmlNodeParserResult.getSqlNodeId()).append(", SQL statement: ").append(xmlNodeParserResult.getFormatSql());
                     bw.append("\n errorDetail: ").append(errorDetail);
                     bw.append("\n");
 
                 } else {
-                    throw new RuntimeException("数据类型不正确");
+                    throw new RuntimeException("Incorrect data type");
                 }
             }
             bw.close();
@@ -70,15 +70,15 @@ public class LogUtil {
         if (!logFile.getParentFile().exists()) {
             boolean mkdirFlag = logFile.getParentFile().mkdirs();
             if (!mkdirFlag) {
-                throw new FileNotFoundException("创建文件目录失败:" + logFile.getParentFile());
+                throw new FileNotFoundException("Failed to create file directory: " + logFile.getParentFile());
             }
         }
         BufferedWriter bw = new BufferedWriter(new FileWriter(logFile));
         try {
             for (Object object : result) {
                 if (!(object instanceof BaseResult)) {
-                    logger.error("不支持类:{}", object.getClass());
-                    throw new Exception("不支持该类型");
+                    logger.error("Unsupported class: {}", object.getClass());
+                    throw new Exception("Unsupported type");
                 }
                 XmlParseResult xmlParseResult = (XmlParseResult) object;
                 XmlNodeParserResult xmlNodeParserResult = xmlParseResult.getXmlNodeParserResult();
@@ -86,7 +86,7 @@ public class LogUtil {
                 boolean isHaveEx = null != xmlNodeParserResult.getException();
                 XmlNodeParserResult xmlNodeParserResult1 = xmlParseResult.getXmlNodeParserResult();
                 if (!hasSuccess || isHaveEx) {
-                    bw.append("SQL ID:").append(xmlNodeParserResult1.getSqlNodeId()).append("\n").append("文件名:").append(xmlParseResult.getMapperName()).append("\n").append("文件路径:").append(xmlNodeParserResult1.getXmlFilePath()).append("\n");
+                    bw.append("SQL ID:").append(xmlNodeParserResult1.getSqlNodeId()).append("\n").append("File name:").append(xmlParseResult.getMapperName()).append("\n").append("File path:").append(xmlNodeParserResult1.getXmlFilePath()).append("\n");
                     if (isHaveEx) {
                         IException iEx = xmlNodeParserResult1.getException();
                         String message = iEx.getMessage();
@@ -115,14 +115,14 @@ public class LogUtil {
         if (!logFile.getParentFile().exists()) {
             boolean mkdirFlag = logFile.getParentFile().mkdirs();
             if (!mkdirFlag) {
-                throw new FileNotFoundException("创建文件目录失败:" + logFile.getParentFile());
+                throw new FileNotFoundException("Failed to create file directory: " + logFile.getParentFile());
             }
         }
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(logFile));
             for (Map.Entry<String, Map<String, Integer>> entry : tableOptCountMap.entrySet()) {
                 String tableName = entry.getKey();
-                bw.append("表名:").append(tableName).append(" 操作统计:");
+                bw.append("Table name:").append(tableName).append(" operation statistics:");
                 Map<String, Integer> optNameAndCountMap = entry.getValue();
                 for (Map.Entry<String, Integer> optNameAndCount : optNameAndCountMap.entrySet()) {
                     String opt = optNameAndCount.getKey();

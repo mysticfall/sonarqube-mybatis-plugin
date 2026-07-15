@@ -24,16 +24,18 @@ public class NoUseDollarInListRule extends AbstractRule {
 
     @Override
     public String getName() {
-        return "In() 参数必须使用#{}，不允许使用${}";
+        return "Use #{} parameters in IN clauses";
     }
 
     @Override
     public String getDescription() {
-        return "不要再in查询语句中使用使用${param}方式进行参数预占，会造成SQL注入攻击";
+        return "Do not build IN clause values with ${param}. MyBatis substitutes ${} values as raw text, "
+                + "which lets user-controlled input change the SQL statement and can lead to SQL injection. "
+                + "Use #{param} or a foreach collection with #{item} placeholders instead.";
     }
 
     @Override
     public String getSimpleDescription() {
-        return "IN语句参数必须使用#{}，不允许使用${}";
+        return "Use #{} parameters in IN clauses";
     }
 }

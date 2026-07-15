@@ -30,16 +30,18 @@ public class NoUseAlwaysEqualRule extends AbstractRule {
 
     @Override
     public String getName() {
-        return "禁止在条件子句中使用恒等式";
+        return "Do not use always-true conditions";
     }
 
     @Override
     public String getDescription() {
-        return "不要在where条件子句中使用恒等式条件，(eg. select 1 from dual where 2=2).若后续查询条件都为空，则会造成全表查询。";
+        return "Avoid conditions that compare an expression with itself, such as 'WHERE 2 = 2'. "
+                + "If all following dynamic conditions are omitted, the statement may run without an effective filter "
+                + "and scan the entire table.";
     }
 
     @Override
     public String getSimpleDescription() {
-        return "禁止在条件子句中使用恒等式";
+        return "Do not use always-true conditions";
     }
 }

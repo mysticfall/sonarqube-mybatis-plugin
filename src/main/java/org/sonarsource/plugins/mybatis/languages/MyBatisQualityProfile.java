@@ -21,16 +21,16 @@ public final class MyBatisQualityProfile implements BuiltInQualityProfilesDefini
         NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile("MyBatisLint Rules", Xml.KEY);
         profile.setDefault(true);
         Map<String, String> rules = new HashMap<String, String>();
-        // 添加sql表达式规则
+        // Add SQL expression rules
         ServiceLoader<AbstractRule> mybatisCheckRuleClasses = ServiceLoader.load(AbstractRule.class, AbstractRule.class.getClassLoader());
         for (AbstractRule rule : mybatisCheckRuleClasses) {
             rules.put(rule.getRuleID(), rule.getSeverity());
         }
-        // 添加正则表达式规则
+        // Add regular expression rules
         for (RuleCodeEnum codeEnum : RuleCodeEnum.values()) {
             rules.put(codeEnum.getName(), codeEnum.getDegreeEnum().getCode());
         }
-        // 注册所有的规则
+        // Register all rules
         for (Map.Entry<String, String> entry : rules.entrySet()) {
             NewBuiltInActiveRule buildInRule = profile.activateRule(REPO_KEY, entry.getKey());
             buildInRule.overrideSeverity(entry.getValue());

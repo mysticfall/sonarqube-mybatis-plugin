@@ -28,16 +28,18 @@ public class NoUseDollarLikeRule extends AbstractRule {
 
     @Override
     public String getName() {
-        return "Like 参数必须使用#{}，不允许使用${}";
+        return "Use #{} parameters in LIKE clauses";
     }
 
     @Override
     public String getDescription() {
-        return "禁止使用${param}方式进行参数预占，会造成SQL注入攻击";
+        return "Do not build LIKE patterns with ${param}. MyBatis substitutes ${} values as raw text, "
+                + "which lets user-controlled input change the SQL statement and can lead to SQL injection. "
+                + "Bind the value with #{param} and add wildcard characters safely in SQL or application code.";
     }
 
     @Override
     public String getSimpleDescription() {
-        return "LIKE语句参数必须使用#{}，不允许使用${}";
+        return "Use #{} parameters in LIKE clauses";
     }
 }

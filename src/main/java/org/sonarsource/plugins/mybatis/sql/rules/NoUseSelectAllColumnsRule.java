@@ -25,16 +25,18 @@ public class NoUseSelectAllColumnsRule extends AbstractRule {
 
     @Override
     public String getName() {
-        return "禁止select星号";
+        return "Avoid SELECT *";
     }
 
     @Override
     public String getDescription() {
-        return "禁止使用select * 来查询所有字段，使用明确的column，若后续表结构表更，则对应的Column可能不存在，会造成潜在错误";
+        return "Do not query all columns with SELECT *. Listing the required columns makes the mapper's data contract "
+                + "explicit, avoids retrieving unused data, and reduces the risk of failures or behavior changes when "
+                + "the table schema changes.";
     }
 
     @Override
     public String getSimpleDescription() {
-        return "禁止SELECT星号(select *)";
+        return "Avoid SELECT *";
     }
 }

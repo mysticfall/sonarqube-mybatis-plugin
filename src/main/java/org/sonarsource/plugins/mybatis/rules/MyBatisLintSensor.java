@@ -91,7 +91,7 @@ public class MyBatisLintSensor implements Sensor {
         XmlBatisSqlParser xmlBatisSqlParser = new XmlBatisSqlParser();
         List<XmlParseResult> results = xmlBatisSqlParser.parseXml(mapperFiles, "mysql");
         List<ErrorDataFromLinter> mybatisError = new ArrayList<>();
-        // SQL 表达式检测结果
+        // SQL expression check results
         for (XmlParseResult temp : results) {
             XmlNodeParserResult xmlNodeParserResult = temp.getXmlNodeParserResult();
             if (xmlNodeParserResult != null) {
@@ -104,7 +104,7 @@ public class MyBatisLintSensor implements Sensor {
             }
         }
 
-        // SQL正则表达式检测
+        // SQL regular expression checks
         XmlPluginRuleResultAll all = RegularRuleHandler.doRuleAll(results);
         Map<RuleCodeEnum, List<XmlPluginRuleResult>> map = all.getRuleMap();
         if (map != null && map.size() > 0) {
@@ -117,7 +117,7 @@ public class MyBatisLintSensor implements Sensor {
                 }
             }
         }
-        // 保存检测结果
+        // Save check results
         for (ErrorDataFromLinter err : mybatisError) {
             getResourceAndSaveIssue(err);
         }

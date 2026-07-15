@@ -67,7 +67,7 @@ public class IbatisParser {
             if (Constant.SELECT_INSERT_DELETE_UPDATE_LIST.contains(nodeType)) {
                 String nodeIdName = rootElement.attributeValue("id");
                 if (StringUtils.isEmpty(nodeIdName)) {
-                    String errorMsg = "xml path:" + this.xmlNode.getXmlFilePath() + " 无法获取xml节点node的id";
+                    String errorMsg = "xml path:" + this.xmlNode.getXmlFilePath() + " unable to get the XML node ID";
                     log.error(errorMsg);
                     xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500003.getCode());
                     xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500003.getDesc() + ":" + errorMsg);
@@ -103,14 +103,14 @@ public class IbatisParser {
                 xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.SUCCESS.getDesc());
                 return xmlNodeParserResult;
             }
-            String errorMsg2 = "xml path:" + this.xmlNode.getXmlFilePath() + "不支持" + nodeType;
+            String errorMsg2 = "xml path:" + this.xmlNode.getXmlFilePath() + " unsupported node type: " + nodeType;
             log.error(errorMsg2);
             xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500004.getCode());
             xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500004.getDesc() + ":" + errorMsg2);
             return xmlNodeParserResult;
         } catch (DruidParseException ex) {
             xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500002.getCode());
-            xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500002.getDesc() + ":" + ("xml path:" + this.xmlNode.getXmlFilePath() + "中id:的sql语句无法被正确解析."));
+            xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500002.getDesc() + ":" + ("xml path:" + this.xmlNode.getXmlFilePath() + " contains SQL that cannot be parsed correctly."));
             xmlNodeParserResult.setException(ex);
             xmlNodeParserResult.setFormatSql(null);
             return xmlNodeParserResult;
@@ -208,8 +208,8 @@ public class IbatisParser {
                             element2.setSonParseResult(sonParseResult2);
                             element = element2;
                         } else {
-                            log.error("<include refid='{}'>不存在该refid", includeId);
-                            throw new Exception("id找不到对应的refid");
+                            log.error("<include refid='{}'> does not exist", includeId);
+                            throw new Exception("No matching refid found for the ID");
                         }
                     } else if (((DefaultElement) content).getName().equalsIgnoreCase("DYNAMIC")) {
                         this.isDynamicSql = true;
@@ -230,7 +230,7 @@ public class IbatisParser {
             } else {
                 element = element2;
                 if (!(content instanceof DefaultComment)) {
-                    throw new Exception("解析xml元素类型失败");
+                    throw new Exception("Failed to parse XML element type");
                 }
             }
             if (element != null) {

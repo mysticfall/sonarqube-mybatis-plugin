@@ -24,7 +24,7 @@ public class XmlUtil {
 
     public static void parseXmlNodeSqlTag(String xmlFilePath, Map<String, List<Element>> xmlSqlTagGlobalMap) throws Exception {
         if (null == xmlSqlTagGlobalMap) {
-            throw new Exception("xmlSqlTagGlobalMap 不能为null, 且必须为空");
+            throw new Exception("xmlSqlTagGlobalMap must not be null and must be empty");
         }
         String fileName = new File(xmlFilePath).getName();
         Document xmlDocument = getXmlDocument(xmlFilePath);
@@ -48,12 +48,12 @@ public class XmlUtil {
                         xmlSqlTagGlobalMap.put(includeSqlId2, elementList);
                     } else {
                         xmlSqlTagGlobalMap.get(includeSqlId2).add(sqlElement);
-                        log.warn("注意含有重复<sql id=[" + includeSqlId2 + "]>");
+                        log.warn("Duplicated <sql id=[" + includeSqlId2 + "]> found");
                     }
                 }
                 return;
             }
-            throw new Exception(fileName + "不是 mybatis/ibatis 文件, 无法识别");
+            throw new Exception(fileName + " is not a MyBatis/iBATIS file and cannot be recognized");
         } catch (DocumentException e) {
             throw new Exception(e.getMessage());
         }
@@ -62,7 +62,7 @@ public class XmlUtil {
     public static int parseXmlNode(String xmlFilePath, Map<String, List<XmlNode>> xmlNodeMap, Map<String, List<Element>> xmlSqlTagGlobalMap) throws Exception {
         int sum = 0;
         if (null == xmlNodeMap || !xmlNodeMap.isEmpty()) {
-            throw new Exception("xmlNodeMap 不能为null, 且必须为空");
+            throw new Exception("xmlNodeMap must not be null and must be empty");
         }
         String fileName = new File(xmlFilePath).getName();
         Document xmlDocument = getXmlDocument(xmlFilePath);
@@ -125,7 +125,7 @@ public class XmlUtil {
                 }
                 return sum;
             }
-            throw new Exception(fileName + "不是 mybatis/ibatis 文件, 无法识别");
+            throw new Exception(fileName + " is not a MyBatis/iBATIS file and cannot be recognized");
         } catch (DocumentException e) {
             throw new Exception(e.getMessage());
         }
@@ -138,7 +138,7 @@ public class XmlUtil {
             Document document = saxReader.read(sqlmapFile);
             return document;
         } catch (Exception e) {
-            throw new RuntimeException("无法读取XML内容:" + filePath);
+            throw new RuntimeException("Unable to read XML content: " + filePath);
         }
     }
 

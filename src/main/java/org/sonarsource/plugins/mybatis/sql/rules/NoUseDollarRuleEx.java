@@ -34,16 +34,18 @@ public class NoUseDollarRuleEx extends AbstractRule {
 
     @Override
     public String getName() {
-        return "比较参数必须使用#{}，不允许使用${}";
+        return "Use #{} parameters in comparisons";
     }
 
     @Override
     public String getDescription() {
-        return "禁止使用${param}方式进行参数预占，会造成SQL注入攻击";
+        return "Do not compare values using ${param}. MyBatis substitutes ${} values as raw text, "
+                + "which lets user-controlled input change the SQL statement and can lead to SQL injection. "
+                + "Use #{param} so comparison values are bound as prepared-statement parameters.";
     }
 
     @Override
     public String getSimpleDescription() {
-        return "比较参数必须使用#{}，不允许使用${}";
+        return "Use #{} parameters in comparisons";
     }
 }

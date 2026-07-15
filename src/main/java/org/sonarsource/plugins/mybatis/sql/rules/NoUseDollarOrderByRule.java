@@ -33,16 +33,18 @@ public class NoUseDollarOrderByRule extends AbstractRule {
 
     @Override
     public String getName() {
-        return "Order By 参数必须使用#{}，不允许使用${}";
+        return "Do not use raw parameters in ORDER BY clauses";
     }
 
     @Override
     public String getDescription() {
-        return "禁止使用${param}方式进行参数预占，会造成SQL注入攻击";
+        return "Do not pass ORDER BY expressions through ${param}. MyBatis substitutes ${} values as raw text, "
+                + "which lets user-controlled input change the SQL statement and can lead to SQL injection. "
+                + "Use a whitelist of allowed column names and sort directions before constructing dynamic ordering.";
     }
 
     @Override
     public String getSimpleDescription() {
-        return "Order By语句参数必须使用#{}，不允许使用${}";
+        return "Do not use raw parameters in ORDER BY clauses";
     }
 }

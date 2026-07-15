@@ -62,7 +62,7 @@ public class DruidVisitorUtil {
             dB2StatementParser = new DB2StatementParser(sql);
             dB2SchemaStatVisitor = new DB2SchemaStatVisitor();
         } else {
-            throw new RuntimeException("暂不支持" + dbType + "类型.");
+            throw new RuntimeException("Unsupported database type: " + dbType + ".");
         }
         try {
             List<SQLStatement> statementList = dB2StatementParser.parseStatementList();

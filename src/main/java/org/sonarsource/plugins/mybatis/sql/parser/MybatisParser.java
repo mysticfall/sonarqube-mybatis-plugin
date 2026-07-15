@@ -60,7 +60,7 @@ public class MybatisParser {
             xmlNodeParserResult = new XmlNodeParserResult();
         }
         if (this.xmlNodeList.isEmpty()) {
-            throw new RuntimeException("xml节点信息不能为空");
+            throw new RuntimeException("XML node information must not be empty");
         }
         XmlNode xmlNode = this.xmlNodeList.get(0);
         xmlNodeParserResult.setSqlNodeId(xmlNode.getSqlNodeId());
@@ -71,18 +71,18 @@ public class MybatisParser {
         xmlNodeParserResult.setRuleCheckResults(new ArrayList<>());
         if (xmlNode.isHasDuplicatedSqlTagId()) {
             xmlNodeParserResult.setHasDuplicatedSqlTagId(true);
-            xmlNodeParserResult.setFormatSql("重复<sql id>:" + xmlNode.getSqlNodeIdOrg());
+            xmlNodeParserResult.setFormatSql("Duplicated <sql id>:" + xmlNode.getSqlNodeIdOrg());
             xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500007.getCode());
             xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500007.getDesc());
-            log.info("重复的<sql id>:" + xmlNode.getSqlNodeId());
+            log.info("Duplicated <sql id>:" + xmlNode.getSqlNodeId());
         } else if (this.xmlNodeList.size() > 1) {
             xmlNodeParserResult.setHasDuplicated(true);
-            xmlNodeParserResult.setFormatSql("重复id");
+            xmlNodeParserResult.setFormatSql("Duplicated ID");
             xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500008.getCode());
             xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500008.getDesc());
             if (this.xmlNodeList.size() >= 2) {
                 for (int i = 1; i < this.xmlNodeList.size(); i++) {
-                    log.error("忽略 重复id:" + xmlNode.getSqlNodeId() + "," + xmlNode.getXmlFilePath());
+                    log.error("Ignoring duplicated ID:" + xmlNode.getSqlNodeId() + "," + xmlNode.getXmlFilePath());
                 }
             }
         } else {
@@ -100,13 +100,13 @@ public class MybatisParser {
                 List<Node> xmlNodeMetaList = rootElement.content();
                 List<INode> nodeParserResultList = parseMybatisXmlNode(xmlNodeMetaList);
                 if (!this.existSubSqlTagId) {
-                    xmlNodeParserResult.setFormatSql("sql节点中refid的id不存在,无法格式化SQL");
+                    xmlNodeParserResult.setFormatSql("The refid in the SQL node does not exist, so SQL cannot be formatted");
                     xmlNodeParserResult.setExistSubSqlTagId(this.existSubSqlTagId);
                     xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500009.getCode());
                     xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500009.getDesc());
                 } else if (this.existSubSqlTagIdDuplicated) {
                     xmlNodeParserResult.setExistSubSqlTagIdDuplicated(this.existSubSqlTagIdDuplicated);
-                    xmlNodeParserResult.setFormatSql("sql节点中refid的id存在重复,无法格式化SQL");
+                    xmlNodeParserResult.setFormatSql("The refid in the SQL node is duplicated, so SQL cannot be formatted");
                     xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500010.getCode());
                     xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500010.getDesc());
                 } else {
@@ -119,12 +119,12 @@ public class MybatisParser {
                         sqlCombine.append(printSql);
                     }
                     String formatSql = StringUtil.delLineBreak(SqlFormatUtil.mybatisFormat(sqlCombine.toString()));
-                    // SQL 正则表达式检测
+                    // SQL regular expression checks
                     List<RuleCheckResult> results = new ArrayList<>();
                     List<SQLStatement> stmtList = SQLUtils.parseStatements(formatSql, this.dbType);
                     //USE JAVA SPI TO GET RULE DEFINE IN META-INF/services
                     ServiceLoader<AbstractRule> rules = ServiceLoader.load(AbstractRule.class, AbstractRule.class.getClassLoader());
-                    // SQL 表达式检测
+                    // SQL expression checks
                     for (SQLStatement statement : stmtList) {
                         //DO CHECK
                         for (AbstractRule rule : rules) {
@@ -179,7 +179,7 @@ public class MybatisParser {
                     DefaultElement defaultElement = (DefaultElement) defaultText;
                     String nodeOptType = defaultElement.getName();
                     if (!Constant.MYBATIS_NODE_PACKAGE_MAP.containsKey(nodeOptType.toLowerCase())) {
-                        log.error("{} 节点标签无对应的处理类", nodeOptType);
+                        log.error("No handler class is registered for node tag {}", nodeOptType);
                         throw new Exception(ErrorCodeEnum.E500006.toString());
                     }
                     String className = Constant.MYBATIS_NODE_PACKAGE_MAP.get(nodeOptType.toLowerCase());
@@ -253,8 +253,8 @@ public class MybatisParser {
                                 List<INode> sonParseResult = parseMybatisXmlNode(includeContents);
                                 nodeImpl.setSonParseResult(sonParseResult);
                             } else {
-                                log.error("<include refid='{}'>不存在,请核对refid", includeId);
-                                throw new Exception("id找不到对应的refid");
+                                log.error("<include refid='{}'> does not exist; check the refid", includeId);
+                                throw new Exception("No matching refid found for the ID");
                             }
                         }
                     } else if (!nodeOptType.equalsIgnoreCase("BIND") && !nodeOptType.equalsIgnoreCase("SELECTKEY")) {
@@ -264,7 +264,7 @@ public class MybatisParser {
                         nodeImpl.setSonParseResult(sonParseResult2);
                     }
                 } else {
-                    throw new Exception("无法识别xml标签:" + defaultText.getName());
+                    throw new Exception("Unrecognized XML tag: " + defaultText.getName());
                 }
             }
             if (nodeImpl != null) {
@@ -285,7 +285,7 @@ public class MybatisParser {
             xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500004.getDesc());
             return false;
         } else if (null == nodeIdName || nodeIdName.isEmpty()) {
-            String errorMsg = "忽略 空id, 无法获取xml节点node的id:" + (null == nodeIdName ? "null值" : "空值");
+            String errorMsg = "Ignoring empty ID; unable to get the XML node ID: " + (null == nodeIdName ? "null value" : "empty value");
             log.error(errorMsg);
             xmlNodeParserResult.setStatusCode(ErrorCodeEnum.E500003.getCode());
             xmlNodeParserResult.setErrorMsg(ErrorCodeEnum.E500003.getDesc() + ":" + errorMsg);

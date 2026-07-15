@@ -4,10 +4,10 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.rule.Severity;
 
 public enum DegreeEnum {
-    BLOCKED(Severity.BLOCKER, "阻塞"),
-    CRITICAL(Severity.CRITICAL, "致命"),
-    MINOR(Severity.MINOR, "次要"),
-    MAJOR(Severity.MAJOR, "严重");
+    BLOCKED(Severity.BLOCKER, "Blocker"),
+    CRITICAL(Severity.CRITICAL, "Critical"),
+    MINOR(Severity.MINOR, "Minor"),
+    MAJOR(Severity.MAJOR, "Major");
 
     private final String code;
     private final String desc;

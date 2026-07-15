@@ -33,7 +33,7 @@ public class RuleUtil {
         if (matcher.find()) {
             String word = matcher.group(1);
             if (word.isEmpty() || !"wait".equalsIgnoreCase(word)) {
-                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "for update必须有wait");
+                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "FOR UPDATE must specify WAIT.");
             }
             return null;
         }
@@ -47,7 +47,7 @@ public class RuleUtil {
         XmlNodeParserResult xmlNodeParserResult = xmlParseResult.getXmlNodeParserResult();
         boolean hasDuplicated = xmlNodeParserResult.isHasDuplicated();
         if (hasDuplicated) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "mapper重复id.");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "Mapper statement ID is duplicated.");
         }
         return null;
     }
@@ -59,7 +59,7 @@ public class RuleUtil {
         XmlNodeParserResult xmlNodeParserResult = xmlParseResult.getXmlNodeParserResult();
         boolean hasDuplicatedSqlTagId = xmlNodeParserResult.isHasDuplicatedSqlTagId();
         if (hasDuplicatedSqlTagId) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "mapper重复<sql id='xxx'>.");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "Mapper <sql id='xxx'> fragment ID is duplicated.");
         }
         return null;
     }
@@ -71,7 +71,7 @@ public class RuleUtil {
         XmlNodeParserResult xmlNodeParserResult = xmlParseResult.getXmlNodeParserResult();
         boolean existSubSqlTagId = xmlNodeParserResult.isExistSubSqlTagId();
         if (!existSubSqlTagId) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "节点中 refid id 不存在");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "The referenced refid does not exist.");
         }
         return null;
     }
@@ -83,7 +83,7 @@ public class RuleUtil {
         XmlNodeParserResult xmlNodeParserResult = xmlParseResult.getXmlNodeParserResult();
         boolean existSubSqlTagIdDuplicated = xmlNodeParserResult.isExistSubSqlTagIdDuplicated();
         if (existSubSqlTagIdDuplicated) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "节点中 refid id 不存在");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "The referenced refid is duplicated.");
         }
         return null;
     }
@@ -98,7 +98,7 @@ public class RuleUtil {
             String formatSql = xmlNodeParserResult.getFormatSql();
             boolean containSelectAll = DruidUtil.isContainSelectAll(visitor, formatSql);
             if (containSelectAll) {
-                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "禁止使用select *");
+                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "Do not use SELECT *.");
             }
             return null;
         }
@@ -117,7 +117,7 @@ public class RuleUtil {
 
         Matcher matcher = Pattern.compile("\\$\\{([a-zA-Z0-9]*)}").matcher(sql);
         if (matcher.find()) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "禁止使用${}");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "Do not use ${} for parameters; use #{} instead.");
         }
         return null;
     }
@@ -138,7 +138,9 @@ public class RuleUtil {
         boolean isJoinConditon = sql.contains("join");
         boolean isWhenConditon = sql.contains(Constant.WHEN);
         if (isSuccess && isUpdateDelete && !isWhereConditon && !isJoinConditon && !isWhenConditon) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "update/delete 必须加上条件.不带条件的UPDATE/DELETE会更新或删除全表数据，存在巨大的误操作风险。");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum,
+                    "UPDATE and DELETE statements must have conditions. Without a condition, the statement can update "
+                            + "or delete every row in the table.");
         }
         return null;
     }
@@ -177,7 +179,10 @@ public class RuleUtil {
                 }
             }
             if (isContainSubQuery && !sql.contains("exists")) {
-                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "正例\nUPDATE t1 SET t1.a = (SELECT t2.b FROM t2 WHERE t1.id = t2.id)\nWHERE EXISTS(SELECT 1 FROM t2 WHERE t1.id = t2.id)\n如果t2不存在t1.id = t2.id的记录，那么t1.a会被赋值为null");
+                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum,
+                        "Positive example:\nUPDATE t1 SET t1.a = (SELECT t2.b FROM t2 WHERE t1.id = t2.id)\n"
+                                + "WHERE EXISTS(SELECT 1 FROM t2 WHERE t1.id = t2.id)\n"
+                                + "If t2 has no row matching t1.id = t2.id, t1.a will be assigned NULL without the EXISTS guard.");
             }
             return null;
         }
@@ -201,7 +206,8 @@ public class RuleUtil {
         boolean isWhereConditon = sql.contains(Constant.WHERE);
         boolean isJoinConditon = sql.contains("join");
         if (isSelect && !isWhereConditon && !isJoinConditon) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "select 必须加上条件.不带条件 select 操作会导致全表扫描");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum,
+                    "SELECT statements must have conditions. A SELECT without conditions can cause a full table scan.");
         }
         return null;
     }
@@ -218,7 +224,8 @@ public class RuleUtil {
         boolean isJoinConditon = sql.contains("join");
         boolean isOn = sql.contains("on");
         if (isJoinConditon && !isOn) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "join操作必须有on条件,避免笛卡尔积");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum,
+                    "JOIN operations must have ON conditions to avoid Cartesian products.");
         }
         return null;
     }
@@ -234,7 +241,7 @@ public class RuleUtil {
         String sql = xmlNodeParserResult.getFormatSql().toLowerCase();
         boolean isUseTrigger = sql.contains("trigger");
         if (isUseTrigger) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "禁止在系统中使用触发器trigger");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "Do not use database triggers.");
         }
         return null;
     }
@@ -252,7 +259,8 @@ public class RuleUtil {
         if ("insert".equalsIgnoreCase(nodeOptType) && null != visitor) {
             Collection<TableStat.Column> columns = visitor.getColumns();
             if (null == columns || columns.isEmpty()) {
-                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "INSERT语句必须明确字段列表");
+                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum,
+                        "INSERT statements must specify an explicit column list.");
             }
             return null;
         }
@@ -269,7 +277,9 @@ public class RuleUtil {
         }
         String optType = xmlNodeParserResult.getNodeOptType();
         if (!"select".equalsIgnoreCase(optType) && xmlNodeParserResult.isContainIfTest()) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "增删改含有if-test动态标签,建议去掉if-test,一个业务操作对应一条SQL,不要写一个大而全的更新接口.避免更新无改动的字段");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum,
+                    "Write statements should not use if-test dynamic tags. Prefer one SQL statement per business "
+                            + "operation instead of a broad update endpoint, and avoid updating unchanged columns.");
         }
         return null;
     }
@@ -287,7 +297,7 @@ public class RuleUtil {
             Map<TableStat.Name, TableStat> tableStatMap = visitor.getTables();
             int size = tableStatMap.size();
             if (size > 5) {
-                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "多表关联建议不要超过5张表");
+                return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "Avoid joining more than five tables.");
             }
             return null;
         }
@@ -309,7 +319,8 @@ public class RuleUtil {
         Matcher matcher4 = Pattern.compile("null\\s*<\\s*>").matcher(sql);
         Matcher matcher5 = Pattern.compile("\\s*<\\s*>\\s*null").matcher(sql);
         if (matcher1.find() || matcher2.find() || matcher3.find() || matcher4.find() || matcher5.find()) {
-            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, "null比较应该使用IS NULL或IS NOT NULL进行比较");
+            return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum,
+                    "Compare NULL values with IS NULL or IS NOT NULL.");
         }
         return null;
     }
@@ -328,9 +339,9 @@ public class RuleUtil {
         if (exception instanceof ParserException) {
             ParserException druidParseException = (ParserException) exception;
             if (sql.contains("$")) {
-                parseResultOrSuggestion = "不支持解析$符号,存在SQL注入可能性,建议用#.";
+                parseResultOrSuggestion = "The $ symbol cannot be parsed safely and may indicate SQL injection risk; use # instead.";
             } else if (sql.contains("--")) {
-                parseResultOrSuggestion = "可能包含非法注释(--),请使用标准的mybatis注释标签";
+                parseResultOrSuggestion = "The SQL may contain an invalid comment (--); use standard MyBatis comment tags.";
             } else {
                 parseResultOrSuggestion = druidParseException.getMessage();
             }
@@ -348,7 +359,7 @@ public class RuleUtil {
 //        String sql = xmlNodeParserResult.getFormatSql().toLowerCase();
         Exception exception = xmlNodeParserResult.getException();
         if (exception != null) {
-            parseResultOrSuggestion = "SQL解析失败，请确认SQL是否拼写正确,详细错误:" + xmlNodeParserResult.getErrorMsg();
+            parseResultOrSuggestion = "SQL parsing failed. Check whether the SQL is valid. Details: " + xmlNodeParserResult.getErrorMsg();
             return createXmlPluginRuleResult(xmlParseResult, ruleCodeEnum, parseResultOrSuggestion);
         }
         return null;
