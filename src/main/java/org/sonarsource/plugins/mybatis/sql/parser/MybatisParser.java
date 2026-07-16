@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.sonarsource.plugins.mybatis.regular.util.StringUtil;
 import org.sonarsource.plugins.mybatis.sql.AbstractRule;
 import org.sonarsource.plugins.mybatis.sql.pojo.RuleCheckResult;
+import org.sonarsource.plugins.mybatis.sql.rules.NoUseDollarRule;
 import org.sonarsource.plugins.mybatis.sql.util.ParseUtil;
 import org.sonarsource.plugins.mybatis.xml.consts.Constant;
 import org.sonarsource.plugins.mybatis.xml.consts.ErrorCodeEnum;
@@ -121,6 +122,8 @@ public class MybatisParser {
                     String formatSql = StringUtil.delLineBreak(SqlFormatUtil.mybatisFormat(sqlCombine.toString()));
                     // SQL regular expression checks
                     List<RuleCheckResult> results = new ArrayList<>();
+                    addNoUseDollarRuleResult(formatSql, results);
+                    xmlNodeParserResult.setRuleCheckResults(results);
                     List<SQLStatement> stmtList = SQLUtils.parseStatements(formatSql, this.dbType);
                     //USE JAVA SPI TO GET RULE DEFINE IN META-INF/services
                     ServiceLoader<AbstractRule> rules = ServiceLoader.load(AbstractRule.class, AbstractRule.class.getClassLoader());
@@ -151,6 +154,18 @@ public class MybatisParser {
                 xmlNodeParserResult.setFormatSql(null);
             }
         }
+    }
+
+    private void addNoUseDollarRuleResult(String formatSql, List<RuleCheckResult> results) {
+        if (formatSql == null || !formatSql.contains("${")) {
+            return;
+        }
+
+        NoUseDollarRule rule = new NoUseDollarRule();
+        RuleCheckResult result = new RuleCheckResult();
+        result.setRuleId(rule.getRuleID());
+        result.setObj(rule.getSimpleDescription() + ",invalid sqlObject:[" + formatSql + "]");
+        results.add(result);
     }
 
     private List<INode> parseMybatisXmlNode(List<Node> xmlNodeMetaList) throws Exception {
